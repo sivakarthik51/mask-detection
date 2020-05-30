@@ -1,24 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
+import { Layout , Space } from 'antd';
+import {VideoInput} from './components/VideoInput';
 import './App.css';
+
+const { Header, Footer, Content } = Layout;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Layout>
+        <Space direction="vertical">
+        <Header>Header</Header>
+        <Content style={{
+          height: '550px'
+        }}>
+          <VideoInput />
+        </Content>
+        <Footer>
+          Copyright CvC
+        </Footer>
+        </Space>
+      </Layout>
     </div>
   );
 }
