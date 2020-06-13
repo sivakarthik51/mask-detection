@@ -1,8 +1,8 @@
 import React, { useState,useEffect , useCallback } from "react";
 import Webcam from "react-webcam";
-import { Button , Spin , InputNumber , Space , Select , Tooltip } from 'antd';
+import { Button , Spin , InputNumber , Space , Select , Tooltip , Statistic } from 'antd';
 import { CameraOutlined,LoadingOutlined,StopOutlined } from '@ant-design/icons';
-import { loadModels , faceDescriptions } from '../api/face';
+import { loadModels , faceDescriptions , setCanvas } from '../api/face';
 
 const {Option} = Select;
    
@@ -20,6 +20,8 @@ export  const VideoInput = () => {
 
     const [capturing, setCapturing] = useState(true);
 
+    const [time, setTime] = useState(0);
+
     let drawBox = null;
 
     const stop = () => {
@@ -33,15 +35,17 @@ export  const VideoInput = () => {
       setCapInterval(
         setInterval(() => {
             capture();
-         }, 1500)
+         }, 100)
       );
+      
     }
    
     const capture = useCallback(
       () => {
         const imageSrc = webcamRef.current.getScreenshot();
         faceDescriptions(imageSrc,512,algorithm).then((data) => {
-          drawBox = data.map((det, i) => {
+          setTime(data.time);
+          drawBox = data.detections.map((det, i) => {
             let _H = det.detection.box.height;
             let _W = det.detection.box.width;
             let _X = det.detection.box._x;
@@ -75,6 +79,7 @@ export  const VideoInput = () => {
                 start();
             }
             fetchModels();
+           
             
         },
         []
@@ -83,7 +88,8 @@ export  const VideoInput = () => {
       <>
     <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }}  />} spinning ={!loaded} >
       <div style={{ position: 'relative', width:videoWidth }}>
-        <div 
+        <div
+          id="video" 
           className="Camera"
           style={{
               display: 'flex',
@@ -134,7 +140,7 @@ export  const VideoInput = () => {
               parser={value => value.replace('px', '')}
               onChange={setVideoHeight}
             />
-            <Tooltip title="Stop the Capture to change Algorithm">
+            <Tooltip title="Stop the Capture to change Algorithm" placement="bottom">
               <Select
                 showSearch
                 disabled={capturing}
@@ -152,6 +158,7 @@ export  const VideoInput = () => {
             </Tooltip>
             <Button type="primary" icon={<CameraOutlined />} onClick={start}>Capture</Button>
             <Button danger icon={<StopOutlined />} onClick={stop}>Stop Detection</Button>
+            <Statistic title="Time Taken" value={time} precision={3} suffix="ms" />
         </Space>
       </div>
      </>

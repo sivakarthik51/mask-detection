@@ -14,7 +14,7 @@ export async function faceDescriptions(blob, inputSize = 512, algorithm='tinyfac
     let img = await faceapi.fetchImage(blob);
     let detections = null;
     var t0,t1;
-
+    const canvas = document.getElementsByTagName('canvas');
     switch(algorithm) {
       case 'tinyfacedetector':
         
@@ -39,7 +39,17 @@ export async function faceDescriptions(blob, inputSize = 512, algorithm='tinyfac
         detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true).withFaceExpressions();
 
     }
+    //faceapi.draw.drawDetections(canvas,detections);
 
     //const resizedDetections = faceapi.resizeResults(detections,displaySize);
-    return detections;
+    return {
+      detections: detections,
+      time: (t1-t0)
+    }
+}
+
+export async function setCanvas() {
+  const video = document.getElementById("video");
+  const canvas = faceapi.createCanvasFromMedia(video);
+  document.body.append(canvas);
 }
